@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Bot ishlavoti"
+    return "Bot ishlayapti!"
 
 api_id = 1150656  # To'g'ri API ID kiriting
 api_hash = "fb33d7c76f5bdaab44d5145537de31c0"  # To'g'ri API hash kiriting
@@ -57,21 +57,30 @@ async def new_code_handler(event):
         if status['valid'] and not status['blocked']:
             await bot.send_message(user_id, f"Yangi Telegram kodi: {last_code}")
 
-async def main():
+async def start_clients():
+    """User va Bot TelegramClient larini ishga tushiradi"""
     await user_client.start()
-    print("User client ishga tushdi...")
     await bot.start(bot_token=bot_token)
-    print("Bot ishga tushdi...")
-    await asyncio.Event().wait()  # Kodni to'xtamasdan ushlab turish
+
+async def run_bot():
+    """Botni ishga tushirib, ishlashini ta'minlaydi"""
+    await start_clients()
+    await asyncio.gather(user_client.run_until_disconnected(), bot.run_until_disconnected())
 
 def run_flask():
-    app.run(host="0.0.0.0", port=8080)
+    """Flask serverini ishga tushuradi"""
+    app.run(host="0.0.0.0", port=8080, debug=False)
 
 if __name__ == "__main__":
     flask_thread = Thread(target=run_flask, daemon=True)
     flask_thread.start()
 
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
     try:
-        asyncio.run(main())
+        loop.run_until_complete(run_bot())
     except KeyboardInterrupt:
         print("Dastur to'xtatildi.")
+    finally:
+        loop.close()
