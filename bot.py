@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Bot ishlavoti"
+    return "Bot ishlavoti 123"
 
 api_id = 1150656  # To'g'ri API ID kiriting
 api_hash = "fb33d7c76f5bdaab44d5145537de31c0"  # To'g'ri API hash kiriting
